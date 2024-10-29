@@ -143,15 +143,6 @@ unclassified:
     hideCredentials: false
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
-tool:
-  git:
-    installations:
-    - home: "git"
-      name: "Default"
-  mavenGlobalConfig:
-    globalSettingsProvider: "standard"
-    settingsProvider: "standard"
-
   jobs:
     - script: >
         pipelineJob('hello-world-job') {
@@ -168,3 +159,12 @@ tool:
             }
           }
         }
+
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+  mavenGlobalConfig:
+    globalSettingsProvider: "standard"
+    settingsProvider: "standard"
