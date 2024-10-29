@@ -1,0 +1,17 @@
+jenkins:
+  jobs:
+    - script: >
+        pipelineJob('hello-world-job') {
+          definition {
+            cps {
+              script("""
+                node {
+                  stage('Hello') {
+                    echo 'Hello world'
+                  }
+                }
+              """)
+              sandbox()
+            }
+          }
+        }
