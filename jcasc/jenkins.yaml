@@ -143,23 +143,6 @@ unclassified:
     hideCredentials: false
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
-  jobs:
-    - script: >
-        pipelineJob('hello-world-job') {
-          definition {
-            cps {
-              script("""
-                node {
-                  stage('Hello') {
-                    echo 'Hello world'
-                  }
-                }
-              """)
-              sandbox()
-            }
-          }
-        }
-
 tool:
   git:
     installations:
@@ -168,3 +151,20 @@ tool:
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
+
+jobs:
+  - script: >
+      pipelineJob('hello-world-job') {
+        definition {
+          cps {
+            script("""
+              node {
+                stage('Hello') {
+                  echo 'Hello world'
+                }
+              }
+            """)
+            sandbox()
+          }
+        }
+      }
