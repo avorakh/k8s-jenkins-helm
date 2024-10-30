@@ -34,8 +34,46 @@ jobs:
       - name: Helm dependency list
         id: dependency-list
         run: |
-          helm dependency update ${{ env.HELM_CHART }}
+          helm dependency list ${{ env.HELM_CHART }}
 
       - name: Run lint
-        id: fmt
+        id: lint
         run: helm lint ${{ env.HELM_CHART }}
+      
+      - uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Helm valications')
+            })
+            
+            // 2. Prepare format of the comment
+            const output = `### Helm valications
+            #### Helm Dependency List: \`${{ steps.dependency-list.outcome }}\`
+            #### Helm Lint: \`${{ steps.lint.outcome }}\`
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
