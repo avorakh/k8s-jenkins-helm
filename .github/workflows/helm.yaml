@@ -57,8 +57,14 @@ jobs:
             
             // 2. Prepare format of the comment
             const output = `### Helm valications
-            #### Helm Dependency List: \`${{ steps.dependency-list.outcome }}\`
-            #### Helm Lint: \`${{ steps.lint.outcome }}\`
+            #### Helm Dependency List:
+            \`\`\`\n
+            ${{ steps.dependency-list.outputs.stdout }}
+            \`\`\`
+            #### Helm Lint:
+            \`\`\`\n
+            ${{ steps.lint.outputs.stdout }}
+            \`\`\`
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
             
             // 3. If we have a comment, update it, otherwise create a new one
