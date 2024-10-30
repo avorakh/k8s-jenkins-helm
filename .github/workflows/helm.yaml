@@ -48,3 +48,7 @@ jobs:
         id: lint
         run: helm lint ${{ env.HELM_CHART }}
 
+      - name: Dry Run Installation
+        run: |
+          helm install ${{ env.HELM_CHART }} -n ${{ env.NAMESPACE }} --dry-run  ${{ env.HELM_CHART }}
+
