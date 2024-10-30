@@ -2,6 +2,7 @@ name: 'Helm - Validations'
 
 env:
   HELM_CHART: "jenkins-ci"
+  NAMESPACE: "jenkins"
 
 on:
   push:
@@ -23,6 +24,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.10.0
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }}
+
       - name: Set up Helm
         uses: azure/setup-helm@v4.2.0
 
@@ -39,52 +47,4 @@ jobs:
       - name: Run lint
         id: lint
         run: helm lint ${{ env.HELM_CHART }}
-      
-      - uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        env:
-          LIST: "helm\n${{ steps.dependency-list.outputs.stdout }}"
-          LINT: "helm\n${{ steps.lint.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Retrieve existing bot comments for the PR
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            })
-            const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('Helm valications')
-            })
-            
-            // 2. Prepare format of the comment
-            const output = `### Helm valications
-            #### Helm Dependency List:
-            <details><summary>Validation Output</summary>
-            
-            \`\`\`\n
-            ${process.env.LIST}
-            \`\`\`
-            
-            </details>
-            #### Helm Lint:
-            ${process.env.LINT}
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            
-            // 3. If we have a comment, update it, otherwise create a new one
-            if (botComment) {
-              github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: output
-              })
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-              })
-            }
+
