@@ -1,5 +1,9 @@
 name: 'Helm - Validations'
 
+env:
+  HELM_CHART: "jenkins-ci"
+  NAMESPACE: "jenkins"
+
 on:
   push:
   pull_request:
@@ -20,21 +24,31 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.10.0
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }}
+
       - name: Set up Helm
         uses: azure/setup-helm@v4.2.0
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-          check-latest: true
-
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
-
-      - name: Run chart-testing (list-changed)
-        id: list-changed
+      - name: Helm dependency update
+        id: dependency-update
         run: |
-          changed=$(ct list-changed
+          helm dependency update ${{ env.HELM_CHART }}
 
-      - name: Run chart-testing (lint)
-        run: ct lint 
+      - name: Helm dependency list
+        id: dependency-list
+        run: |
+          helm dependency list ${{ env.HELM_CHART }}
+
+      - name: Run lint
+        id: lint
+        run: helm lint ${{ env.HELM_CHART }}
+
+      - name: Dry Run Installation
+        run: |
+          helm install ${{ env.HELM_CHART }} -n ${{ env.NAMESPACE }} --dry-run  ${{ env.HELM_CHART }}
+
