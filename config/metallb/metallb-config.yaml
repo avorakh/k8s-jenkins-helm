@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - <PUT_PUBLIC_IP_OF_WORKER_NODE>-<PUT_PUBLIC_IP_OF_WORKER_NODE>

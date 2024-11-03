@@ -218,6 +218,7 @@ controller:
   # Use ClusterIP if your setup includes ingress controller
   # -- k8s service type
   serviceType: ClusterIP
+  # serviceType: ClusterIP
 
   # -- k8s service clusterIP. Only used if serviceType is ClusterIP
   clusterIp:
@@ -1250,7 +1251,7 @@ persistence:
   # If undefined (the default) or set to null, no storageClassName spec is
   #   set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS & OpenStack)
   # -- Storage class for the PVC
-  storageClass: jenkins-pv
+  storageClass: jenkins-pvc
   # -- Annotations for the PVC
   annotations: {}
   # -- Labels for the PVC
