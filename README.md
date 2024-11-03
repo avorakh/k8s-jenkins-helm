@@ -1,4 +1,13 @@
 # k8s-jenkins-helm
+## Tools
+
+- [Jenkins](https://www.jenkins.io/)
+- [Kubernetes](https://kubernetes.io/)
+- [helm](https://helm.sh/)
+- [K3s](https://k3s.io/)
+- [MetalLB](https://metallb.universe.tf/)
+- [Local Path Provisioner](https://github.com/rancher/local-path-provisioner)
+
 ## Create K8s Cluster
 Please see the steps on the page.
 - [Link](https://github.com/avorakh/rsschool-devops-course-tasks/blob/task-04/README.md)
