@@ -3,6 +3,7 @@ name: 'Helm - Validations'
 env:
   HELM_CHART: "jenkins-ci"
   NAMESPACE: "jenkins"
+  MONITORING_NAMESPACE: "demo-metrics"
 
 on:
   push:
@@ -27,9 +28,13 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.10.0
 
-      - name: Create namespace
+      - name: Create Jenkins namespace
         run: |
           kubectl create namespace ${{ env.NAMESPACE }}
+
+      - name: Create Monitoring namespace
+        run: |
+          kubectl create namespace ${{ env.MONITORING_NAMESPACE }}
 
       - name: Set up Helm
         uses: azure/setup-helm@v4.2.0
